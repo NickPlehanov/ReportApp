@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:viewModels="clr-namespace:ReportApp.ViewModels"
+             xmlns:dg="clr-namespace:Xamarin.Forms.DataGrid;assembly=Xamarin.Forms.DataGrid"          
+             x:Class="ReportApp.MainPage">
+    <ContentPage.Resources>
+        <viewModels:MainPageViewModel x:Key="viewModel"/>
+    </ContentPage.Resources>
+    <Grid BindingContext="{StaticResource viewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="8*"/>
+        </Grid.RowDefinitions>
+        <StackLayout Grid.Row="0">
+            <!--<datepicker:SfDatePicker Date="{Binding Dt}" PickerMode="Dialog" Format="dd_MMM_yyyy"/>-->
+            <DatePicker Date="{Binding Dt, Mode=TwoWay}"/>
+            <Entry Text="{Binding Late, Mode=TwoWay}" Keyboard="Numeric"/>
+        </StackLayout>
+        <!--<Button Grid.Row="0" Text="Загрузить данные" Command="{Binding GetReport}"/>-->
+        <Grid Grid.Row="1" >
+            <dg:DataGrid x:Name="dataGrid" IsRefreshing="{Binding IsBusy, Mode=TwoWay}" ItemsSource="{Binding reportAlarmExBases, UpdateSourceEventName=PropertyChanged}" SelectedItem="{Binding SelectedReportAlarmExBase, Mode=TwoWay}" PullToRefreshCommand="{Binding GetReport}">
+                <dg:DataGrid.Columns>
+                    <dg:DataGridColumn  Title="Объект" PropertyName="new_andromeda_alarm"/>
+                </dg:DataGrid.Columns>
+            </dg:DataGrid>
+        </Grid>
+    </Grid>
+
+
+</ContentPage>
