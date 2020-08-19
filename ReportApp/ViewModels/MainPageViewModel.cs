@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Plugin.Connectivity;
 using ReportApp.Helpers;
 using ReportApp.Models;
 using System;
@@ -42,19 +43,21 @@ namespace ReportApp.ViewModels {
             }
         }
 
-        private DateTime _Date;
+        private DateTime _Dt;
         public DateTime Dt {
-            get => _Date;
+            get => _Dt;
             set {
-                if (value == DateTime.Parse("01.01.1900 00:00:00"))
-                    _Date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+                //var t = DateTime.Parse(value.ToString("dd-MM-yyyy"));
+                if (value == DateTime.Parse("01.01.2010 00:00:00"))
+                    _Dt = DateTime.Parse(DateTime.Now.ToString("dd-MM-yyyy"));
                 else
-                    _Date = value;
+                    _Dt = value;
                 //string dt = value.ToString(CultureInfo.InvariantCulture);
                 //if (DateTime.TryParse(value, out _))
                 //    _Date = DateTime.Parse(value).ToShortDateString();
                 //else
                 //    _Date = DateTime.Now.ToShortDateString();
+                OnPropertyChanged("Dt");
             }
         }
         private string _Late;
@@ -64,7 +67,14 @@ namespace ReportApp.ViewModels {
                 if (int.TryParse(value, out _))
                     _Late = int.Parse(value).ToString();
                 else
-                    _Late = "0";
+                    _Late =null;
+            }
+        }
+        private string _Msg;
+        public string Msg {
+            get => _Msg;
+            set {
+                _Msg = "Проведите вниз для обновления данных";
             }
         }
 
@@ -73,14 +83,17 @@ namespace ReportApp.ViewModels {
             get => _SelectedReportAlarmExBase;
             set {
                 _SelectedReportAlarmExBase = value;
-                string msg = " ОС:" + BoolToString(SelectedReportAlarmExBase.new_onc) + " ПС:" + BoolToString(SelectedReportAlarmExBase.new_ps) + " ТРС:" + BoolToString(SelectedReportAlarmExBase.new_tpc) + Environment.NewLine
+                string msg =
+                    SelectedReportAlarmExBase.new_address+Environment.NewLine
+                    + " ОС:" + BoolToString(SelectedReportAlarmExBase.new_onc) + " ПС:" + BoolToString(SelectedReportAlarmExBase.new_ps) + " ТРС:" + BoolToString(SelectedReportAlarmExBase.new_tpc) + Environment.NewLine
                     + " Акт:" + BoolToString(SelectedReportAlarmExBase.new_act) + " х/о:" + BoolToString(SelectedReportAlarmExBase.new_owner) + " Полиция:" + BoolToString(SelectedReportAlarmExBase.new_police) + Environment.NewLine
                     + " Группа: " + SelectedReportAlarmExBase.new_group + Environment.NewLine
                     + " Тревога:" + DateToString(SelectedReportAlarmExBase.new_alarm_dt) + Environment.NewLine
                     + " Отправка:" + DateToString(SelectedReportAlarmExBase.new_departure) + Environment.NewLine
                     + " Прибытие:" + DateToString(SelectedReportAlarmExBase.new_arrival) + Environment.NewLine
                     + " Отмена:" + DateToString(SelectedReportAlarmExBase.new_cancel);
-                Application.Current.MainPage.DisplayAlert("Информация", msg, "ОК", "Отмена");
+                string header = " №:" + SelectedReportAlarmExBase.new_number + " " + SelectedReportAlarmExBase.new_objname + Environment.NewLine;
+                Application.Current.MainPage.DisplayAlert(header, msg, "ОК");
                 _SelectedReportAlarmExBase = null;
                 OnPropertyChanged("SelectedReportAlarmExBase");
             }
@@ -107,45 +120,63 @@ namespace ReportApp.ViewModels {
                     Method = HttpMethod.Get
                 };
                 request.Headers.Add("Accept", "application/json");
-
-                HttpResponseMessage response = await client.SendAsync(request);
-                if (response.StatusCode == HttpStatusCode.OK) {
-                    HttpContent responseContent = response.Content;
-                    var json = await responseContent.ReadAsStringAsync();
-                    string s = json.Replace(@"\", string.Empty);
-                    string final = s.Trim().Substring(1, (s.Length) - 2);
-                    try {
-                        List<ReportAlarmExBase> ser = JsonConvert.DeserializeObject<List<ReportAlarmExBase>>(final);
-                        if (ser.Any()) {
-                            reportAlarmExBases.Clear();
-                            foreach (ReportAlarmExBase item in ser) {
-                                reportAlarmExBases.Add(new ReportAlarmExBase() {
-                                    new_act = item.new_act,
-                                    new_alarmid = item.new_alarmid,
-                                    new_alarm_dt = item.new_alarm_dt,
-                                    new_andromeda_alarm = item.new_andromeda_alarm,
-                                    new_arrival = item.new_arrival,
-                                    new_cancel = item.new_cancel,
-                                    new_departure = item.new_departure,
-                                    new_group = item.new_group,
-                                    new_name = item.new_name,
-                                    new_onc = item.new_onc,
-                                    new_order = item.new_order,
-                                    new_owner = item.new_owner,
-                                    new_police = item.new_police,
-                                    new_ps = item.new_ps,
-                                    new_tpc = item.new_tpc,
-                                    new_zone = item.new_zone
-                                });
+                if (string.IsNullOrEmpty(Late)) {
+                    await Application.Current.MainPage.DisplayAlert("Ошибка", "Укажите время опоздания", "ОК");
+                    //Msg = "Укажите время опоздания";
+                    IsBusy = false;
+                }
+                else {
+                    if (CrossConnectivity.Current.IsConnected) {
+                        HttpResponseMessage response = await client.SendAsync(request);
+                        if (response.StatusCode == HttpStatusCode.OK) {
+                            HttpContent responseContent = response.Content;
+                            var json = await responseContent.ReadAsStringAsync();
+                            string s = json.Replace(@"\", string.Empty);
+                            string final = s.Trim().Substring(1, (s.Length) - 2);
+                            try {
+                                List<ReportAlarmExBase> ser = JsonConvert.DeserializeObject<List<ReportAlarmExBase>>(final);
+                                if (ser.Any()) {
+                                    reportAlarmExBases.Clear();
+                                    foreach (ReportAlarmExBase item in ser.OrderBy(x => x.new_alarm_dt)) {
+                                        reportAlarmExBases.Add(new ReportAlarmExBase() {
+                                            new_act = item.new_act,
+                                            new_alarmid = item.new_alarmid,
+                                            new_alarm_dt = item.new_alarm_dt,
+                                            new_andromeda_alarm = item.new_andromeda_alarm,
+                                            new_arrival = item.new_arrival,
+                                            new_cancel = item.new_cancel,
+                                            new_departure = item.new_departure,
+                                            new_group = item.new_group,
+                                            new_name = item.new_name,
+                                            new_onc = item.new_onc,
+                                            new_order = item.new_order,
+                                            new_owner = item.new_owner,
+                                            new_police = item.new_police,
+                                            new_ps = item.new_ps,
+                                            new_tpc = item.new_tpc,
+                                            new_zone = item.new_zone,
+                                            new_address = item.new_address,
+                                            new_number = item.new_number,
+                                            new_objname = item.new_objname,
+                                            new_obj = item.new_number + " " + item.new_objname
+                                        });
+                                    }
+                                }
+                                else {
+                                    await Application.Current.MainPage.DisplayAlert("Информация", "Объектов не найдено", "ОК");
+                                    reportAlarmExBases.Clear();
+                                }
+                            }
+                            catch (Exception ex) {
+                                ErrMessage = ex.Message;
                             }
                         }
-                        //await PushAsync(new MenuPage());
+                        IsBusy = false;
+                        Msg = null;
                     }
-                    catch (Exception ex) {
-                        ErrMessage = ex.Message;
-                    }
+                    else
+                        await Application.Current.MainPage.DisplayAlert("Ошибка", "Проверьте подключение к интернету", "ОК");
                 }
-                IsBusy = false;
             });
         }
     }

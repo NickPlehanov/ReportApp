@@ -20,5 +20,9 @@ namespace ReportApp.Models {
         public DateTime? new_alarm_dt { get; set; }
         public string new_zone { get; set; }
         public bool? new_ps { get; set; }
+        public string new_address { get; set; }
+        public string new_number { get; set; }
+        public string new_objname { get; set; }
+        public string new_obj { get; set; }
     }
 }
