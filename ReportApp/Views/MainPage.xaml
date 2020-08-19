@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              xmlns:viewModels="clr-namespace:ReportApp.ViewModels"
              xmlns:dg="clr-namespace:Xamarin.Forms.DataGrid;assembly=Xamarin.Forms.DataGrid" xmlns:sys="clr-namespace:System;assembly=netstandard"
-             x:Class="ReportApp.MainPage">
+             x:Class="ReportApp.MainPage" IconImageSource="@drawable/icon">
     <ContentPage.Resources>
         <viewModels:MainPageViewModel x:Key="viewModel"/>
     </ContentPage.Resources>
