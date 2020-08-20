@@ -5,14 +5,10 @@ using ReportApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Xamarin.Forms;
-using Xamarin.Forms.DataGrid;
 
 namespace ReportApp.ViewModels {
     class MainPageViewModel : BaseViewModel {
@@ -84,14 +80,15 @@ namespace ReportApp.ViewModels {
             set {
                 _SelectedReportAlarmExBase = value;
                 string msg =
-                    SelectedReportAlarmExBase.new_address+Environment.NewLine
+                    SelectedReportAlarmExBase.new_address + Environment.NewLine
                     + " ОС:" + BoolToString(SelectedReportAlarmExBase.new_onc) + " ПС:" + BoolToString(SelectedReportAlarmExBase.new_ps) + " ТРС:" + BoolToString(SelectedReportAlarmExBase.new_tpc) + Environment.NewLine
                     + " Акт:" + BoolToString(SelectedReportAlarmExBase.new_act) + " х/о:" + BoolToString(SelectedReportAlarmExBase.new_owner) + " Полиция:" + BoolToString(SelectedReportAlarmExBase.new_police) + Environment.NewLine
                     + " Группа: " + SelectedReportAlarmExBase.new_group + Environment.NewLine
                     + " Тревога:" + DateToString(SelectedReportAlarmExBase.new_alarm_dt) + Environment.NewLine
                     + " Отправка:" + DateToString(SelectedReportAlarmExBase.new_departure) + Environment.NewLine
                     + " Прибытие:" + DateToString(SelectedReportAlarmExBase.new_arrival) + Environment.NewLine
-                    + " Отмена:" + DateToString(SelectedReportAlarmExBase.new_cancel);
+                    + " Отмена:" + DateToString(SelectedReportAlarmExBase.new_cancel) + Environment.NewLine
+                    + " Описание " + SelectedReportAlarmExBase.new_name;
                 string header = " №:" + SelectedReportAlarmExBase.new_number + " " + SelectedReportAlarmExBase.new_objname + Environment.NewLine;
                 Application.Current.MainPage.DisplayAlert(header, msg, "ОК");
                 _SelectedReportAlarmExBase = null;
@@ -165,17 +162,23 @@ namespace ReportApp.ViewModels {
                                 else {
                                     await Application.Current.MainPage.DisplayAlert("Информация", "Объектов не найдено", "ОК");
                                     reportAlarmExBases.Clear();
+                                    IsBusy = false;
+                                    Msg = null;
                                 }
                             }
                             catch (Exception ex) {
                                 ErrMessage = ex.Message;
+                                IsBusy = false;
                             }
                         }
                         IsBusy = false;
                         Msg = null;
                     }
-                    else
+                    else {
                         await Application.Current.MainPage.DisplayAlert("Ошибка", "Проверьте подключение к интернету", "ОК");
+                        IsBusy = false;
+                        Msg = null;
+                    }
                 }
             });
         }
