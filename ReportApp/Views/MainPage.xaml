@@ -62,14 +62,16 @@
         </StackLayout>
         <StackLayout Grid.Row="0" Grid.Column="2" HorizontalOptions="CenterAndExpand" WidthRequest="50" VerticalOptions="CenterAndExpand">
             <Entry Text="{Binding Late}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
+            <Button Text="Ок" Command="{Binding GetReport}"/>
             <!--<Label Text="{Binding Msg}" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" VerticalOptions="CenterAndExpand"/>-->
         </StackLayout>
         <!--<Button Grid.Row="0" Text="Загрузить данные" Command="{Binding GetReport}"/>-->
         <Grid Grid.Row="1" Grid.ColumnSpan="3">
             <dg:DataGrid SortedColumnIndex="0" BorderColor="#620000" x:Name="dataGrid" IsRefreshing="{Binding IsBusy, Mode=TwoWay}" ItemsSource="{Binding reportAlarmExBases, UpdateSourceEventName=PropertyChanged}" SelectedItem="{Binding SelectedReportAlarmExBase, Mode=TwoWay}" PullToRefreshCommand="{Binding GetReport}">
                 <dg:DataGrid.Columns>
-                    <dg:DataGridColumn Width="*" Title="Время сработки" PropertyName="new_alarm_dt"/>
-                    <dg:DataGridColumn Width="2*" Title="Объект" PropertyName="new_obj"/>
+                    <dg:DataGridColumn Width="2*" Title="Время сработки" PropertyName="new_alarm_dt"/>
+                    <dg:DataGridColumn Width="*" Title="Экипаж" PropertyName="new_group"/>
+                    <dg:DataGridColumn Width="3*" Title="Объект" PropertyName="new_obj"/>
                 </dg:DataGrid.Columns>
                 <dg:DataGrid.RowsBackgroundColorPalette>
                     <dg:PaletteCollection>

@@ -38,6 +38,8 @@ namespace ReportApp.ViewModels {
                 OnPropertyChanged("IsBusy");
             }
         }
+        private bool _startTimeFlag = true;
+        private bool _endTimeFlag = true;
 
         private DateTime _StartDate;
         public DateTime StartDate {
@@ -63,15 +65,33 @@ namespace ReportApp.ViewModels {
         }
         private TimeSpan _StartTime;
         public TimeSpan StartTime {
-            get => _StartTime;
-            set {
-                _StartTime = value;
-                OnPropertyChanged("StartTime");
+            get {
+                //if (_StartTime == TimeSpan.Parse("00:00:00"))
+                //    return new TimeSpan(9, 0, 0);
+                //else
+                //    return _StartTime;
+                if (_startTimeFlag) {
+                    _startTimeFlag = false;
+                    return new TimeSpan(9, 0, 0);
+                }
+                else
+                    return _StartTime;
             }
-        }
+                set {
+                    _StartTime = value;
+                    OnPropertyChanged("StartTime");
+                }
+            }
         private TimeSpan _EndTime;
         public TimeSpan EndTime {
-            get => _EndTime;
+            get {
+                if (_endTimeFlag) {
+                    _endTimeFlag = false;
+                    return new TimeSpan(9, 0, 0);
+                }
+                else
+                    return _StartTime;
+            }
             set {
                 _EndTime = value;
                 OnPropertyChanged("EndTime");
@@ -85,7 +105,7 @@ namespace ReportApp.ViewModels {
                 if (int.TryParse(value, out _))
                     _Late = int.Parse(value).ToString();
                 else
-                    _Late =null;
+                    _Late = null;
             }
         }
         private string _Msg;
@@ -103,7 +123,7 @@ namespace ReportApp.ViewModels {
                 _SelectedReportAlarmExBase = value;
                 string msg =
                     SelectedReportAlarmExBase.new_address + Environment.NewLine
-                    +" Опоздание: "+SelectedReportAlarmExBase.delta+Environment.NewLine
+                    + " Опоздание: " + SelectedReportAlarmExBase.delta + Environment.NewLine
                     + " ОС:" + BoolToString(SelectedReportAlarmExBase.new_onc) + " ПС:" + BoolToString(SelectedReportAlarmExBase.new_ps) + " ТРС:" + BoolToString(SelectedReportAlarmExBase.new_tpc) + Environment.NewLine
                     + " Акт:" + BoolToString(SelectedReportAlarmExBase.new_act) + " х/о:" + BoolToString(SelectedReportAlarmExBase.new_owner) + " Полиция:" + BoolToString(SelectedReportAlarmExBase.new_police) + Environment.NewLine
                     + " Группа: " + SelectedReportAlarmExBase.new_group + Environment.NewLine
@@ -136,11 +156,11 @@ namespace ReportApp.ViewModels {
                 HttpClient client = new HttpClient();
                 DateTime StartDT = new DateTime(StartDate.Year, StartDate.Month, StartDate.Day, StartTime.Hours, StartTime.Minutes, StartTime.Seconds);
                 DateTime EndDT = new DateTime(EndDate.Year, EndDate.Month, EndDate.Day, EndTime.Hours, EndTime.Minutes, EndTime.Seconds);
-                if (StartDT>=EndDT) {
+                if (StartDT >= EndDT) {
                     await Application.Current.MainPage.DisplayAlert("Ошибка", "Дата и время начала и окончания не могут совпадать. Либо дата начала больше даты окончания", "ОК");
                     IsBusy = false;
-                }                
-                else if (StartDT>DateTime.Now) {
+                }
+                else if (StartDT > DateTime.Now) {
                     await Application.Current.MainPage.DisplayAlert("Ошибка", "Дата и время начала не могут быть больше текущего времени", "ОК");
                     IsBusy = false;
                 }
