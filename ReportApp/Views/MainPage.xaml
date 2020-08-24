@@ -13,11 +13,12 @@
             <RowDefinition Height="7*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0">
-            <DatePicker Date="{Binding Dt}" HorizontalOptions="CenterAndExpand" >
+        <StackLayout Grid.Row="0" Grid.Column="0" HorizontalOptions="CenterAndExpand">
+            <DatePicker Date="{Binding StartDate}">
                 <DatePicker.Format>d</DatePicker.Format>
                 <DatePicker.MinimumDate>
                     <sys:DateTime x:FactoryMethod="Parse">
@@ -34,16 +35,41 @@
                     </sys:DateTime>
                 </DatePicker.MaximumDate>
             </DatePicker>
-        </Grid>
-        <Grid Grid.Row="0" Grid.Column="1" HorizontalOptions="CenterAndExpand" WidthRequest="50">
+            <TimePicker Time="{Binding StartTime, Mode=TwoWay}">
+            </TimePicker>
+        </StackLayout>
+        <StackLayout Grid.Row="0" Grid.Column="1" HorizontalOptions="CenterAndExpand">
+            <DatePicker Date="{Binding EndDate}" >
+                <DatePicker.Format>d</DatePicker.Format>
+                <DatePicker.MinimumDate>
+                    <sys:DateTime x:FactoryMethod="Parse">
+                        <x:Arguments>
+                            <x:String>Jan 1 2010</x:String>
+                        </x:Arguments>
+                    </sys:DateTime>
+                </DatePicker.MinimumDate>
+                <DatePicker.MaximumDate>
+                    <sys:DateTime x:FactoryMethod="Parse">
+                        <x:Arguments>
+                            <x:String>Dec 31 2050</x:String>
+                        </x:Arguments>
+                    </sys:DateTime>
+                </DatePicker.MaximumDate>
+            </DatePicker>
+            <TimePicker Time="{Binding EndTime, UpdateSourceEventName=PropertyChanged}">
+                <TimePicker.Format>t</TimePicker.Format>
+            </TimePicker>
+        </StackLayout>
+        <StackLayout Grid.Row="0" Grid.Column="2" HorizontalOptions="CenterAndExpand" WidthRequest="50" VerticalOptions="CenterAndExpand">
             <Entry Text="{Binding Late}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
             <!--<Label Text="{Binding Msg}" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" VerticalOptions="CenterAndExpand"/>-->
-        </Grid>
+        </StackLayout>
         <!--<Button Grid.Row="0" Text="Загрузить данные" Command="{Binding GetReport}"/>-->
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
-            <dg:DataGrid BorderColor="#620000" x:Name="dataGrid" IsRefreshing="{Binding IsBusy, Mode=TwoWay}" ItemsSource="{Binding reportAlarmExBases, UpdateSourceEventName=PropertyChanged}" SelectedItem="{Binding SelectedReportAlarmExBase, Mode=TwoWay}" PullToRefreshCommand="{Binding GetReport}">
+        <Grid Grid.Row="1" Grid.ColumnSpan="3">
+            <dg:DataGrid SortedColumnIndex="0" BorderColor="#620000" x:Name="dataGrid" IsRefreshing="{Binding IsBusy, Mode=TwoWay}" ItemsSource="{Binding reportAlarmExBases, UpdateSourceEventName=PropertyChanged}" SelectedItem="{Binding SelectedReportAlarmExBase, Mode=TwoWay}" PullToRefreshCommand="{Binding GetReport}">
                 <dg:DataGrid.Columns>
-                    <dg:DataGridColumn Title="Объект" PropertyName="new_obj"/>
+                    <dg:DataGridColumn Width="*" Title="Время сработки" PropertyName="new_alarm_dt"/>
+                    <dg:DataGridColumn Width="2*" Title="Объект" PropertyName="new_obj"/>
                 </dg:DataGrid.Columns>
                 <dg:DataGrid.RowsBackgroundColorPalette>
                     <dg:PaletteCollection>
