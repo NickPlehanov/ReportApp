@@ -10,14 +10,13 @@
     <Grid BindingContext="{StaticResource viewModel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="7*"/>
+            <RowDefinition Height="6*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <StackLayout Grid.Row="0" Grid.Column="0" HorizontalOptions="CenterAndExpand">
+        <!--<StackLayout Grid.Row="0" Grid.Column="0" HorizontalOptions="CenterAndExpand">
             <DatePicker Date="{Binding StartDate}">
                 <DatePicker.Format>d</DatePicker.Format>
                 <DatePicker.MinimumDate>
@@ -57,12 +56,56 @@
                 </DatePicker.MaximumDate>
             </DatePicker>
             <TimePicker Time="{Binding EndTime, UpdateSourceEventName=PropertyChanged}">
-                <TimePicker.Format>t</TimePicker.Format>
             </TimePicker>
+        </StackLayout>-->
+        <StackLayout Orientation="Vertical" Grid.Column="0" VerticalOptions="FillAndExpand">
+            <StackLayout Orientation="Horizontal">
+                <Label Text="С" VerticalOptions="Center" WidthRequest="20" Margin="5,0"/>
+                <DatePicker HorizontalOptions="CenterAndExpand" VerticalOptions="Center" Margin="5,0" Date="{Binding StartDate}">
+                    <DatePicker.Format>d</DatePicker.Format>
+                    <DatePicker.MinimumDate>
+                        <sys:DateTime x:FactoryMethod="Parse">
+                            <x:Arguments>
+                                <x:String>Jan 1 2010</x:String>
+                            </x:Arguments>
+                        </sys:DateTime>
+                    </DatePicker.MinimumDate>
+                    <DatePicker.MaximumDate>
+                        <sys:DateTime x:FactoryMethod="Parse">
+                            <x:Arguments>
+                                <x:String>Dec 31 2050</x:String>
+                            </x:Arguments>
+                        </sys:DateTime>
+                    </DatePicker.MaximumDate>
+                </DatePicker>
+                <TimePicker Margin="5,0" Time="{Binding StartTime, Mode=TwoWay}" VerticalOptions="Center"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="По" VerticalOptions="Center"  WidthRequest="20" Margin="5,0"/>
+                <DatePicker HorizontalOptions="CenterAndExpand" VerticalOptions="Center" Margin="5,0" Date="{Binding EndDate}" >
+                    <DatePicker.Format>d</DatePicker.Format>
+                    <DatePicker.MinimumDate>
+                        <sys:DateTime x:FactoryMethod="Parse">
+                            <x:Arguments>
+                                <x:String>Jan 1 2010</x:String>
+                            </x:Arguments>
+                        </sys:DateTime>
+                    </DatePicker.MinimumDate>
+                    <DatePicker.MaximumDate>
+                        <sys:DateTime x:FactoryMethod="Parse">
+                            <x:Arguments>
+                                <x:String>Dec 31 2050</x:String>
+                            </x:Arguments>
+                        </sys:DateTime>
+                    </DatePicker.MaximumDate>
+                </DatePicker>
+                <TimePicker Time="{Binding EndTime}" Margin="5,0"/>
+            </StackLayout>
         </StackLayout>
-        <StackLayout Grid.Row="0" Grid.Column="2" HorizontalOptions="CenterAndExpand" WidthRequest="50" VerticalOptions="CenterAndExpand">
-            <Entry Text="{Binding Late}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
-            <Button Text="Ок" Command="{Binding GetReport}"/>
+        <StackLayout Grid.Column="1" Margin="20,0,0,0" Orientation="Vertical" Spacing="0" Padding="0" HorizontalOptions="StartAndExpand">
+            <Label Text="Опоздание" WidthRequest="100" Margin="0" HorizontalTextAlignment="Center"/>
+            <Entry Text="{Binding Late}" Keyboard="Numeric" HorizontalTextAlignment="Center" Margin="0"/>
+            <Button Text="Ок" Command="{Binding GetReport}" Margin="0"/>
             <!--<Label Text="{Binding Msg}" HorizontalOptions="CenterAndExpand" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" VerticalOptions="CenterAndExpand"/>-->
         </StackLayout>
         <!--<Button Grid.Row="0" Text="Загрузить данные" Command="{Binding GetReport}"/>-->
